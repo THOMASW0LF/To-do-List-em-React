@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
 import { useState } from 'react';
 
 const tarefasIniciais = [
-  { nome: "Prova Bona" },
-  { nome: "Trabalho Eio" },
-  { nome: "Instalar mod Zomboid" }
+  { nome: "Trabalho Eio", checked: false },
+  { nome: "Bona's Store", checked: false },
+  { nome: "Instalar mod Zomboid", checked: false }
 ];
 
 export default function App() {
@@ -15,9 +15,23 @@ export default function App() {
 
   const adicionarTarefa = () => {
     if (novaTarefa.trim() !== '') {
-      setTarefas([...tarefas, { nome: novaTarefa.trim() }]);
+      setTarefas([
+        ...tarefas,
+        { nome: novaTarefa.trim(), checked: false }
+      ]);
       setNovaTarefa('');
     }
+  }
+
+  const marcarTarefa = (index) => {
+    const novaLista = tarefas.map((item, i) => {
+      if (i === index) {
+        return { ...item, checked: !item.checked };
+      }
+      return item;
+    });
+
+    setTarefas(novaLista);
   }
 
   const removerTarefa = (indexRemover) => {
@@ -32,9 +46,19 @@ export default function App() {
         tarefas.map((item, index) => (
           <View key={index} style={styles.elementos}>
 
-            <Text style={styles.itens}>
-              {item.nome}
-            </Text>
+            <Pressable
+              style={styles.checkArea}
+              onPress={() => marcarTarefa(index)}
+            >
+              <Text
+                style={[
+                  styles.itens,
+                  item.checked && styles.itemMarcado
+                ]}
+              >
+                {item.checked ? "☑ " : "☐ "} {item.nome}
+              </Text>
+            </Pressable>
 
             <Pressable
               style={styles.botaoRemover}
@@ -88,10 +112,19 @@ const styles = StyleSheet.create({
     width: 250,
   },
 
+  checkArea: {
+    flex: 1,
+  },
+
   itens: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+
+  itemMarcado: {
+    textDecorationLine: 'line-through',
+    opacity: 0.6,
   },
 
   botaoRemover: {
